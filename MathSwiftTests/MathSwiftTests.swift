@@ -8,6 +8,7 @@
 
 import UIKit
 import XCTest
+import MathSwift
 
 class MathSwiftTests: XCTestCase {
     
@@ -33,4 +34,10 @@ class MathSwiftTests: XCTestCase {
         }
     }
     
+    func testMatrixInit() {
+
+        let m = Matrix(rows: 1, columns: 2)
+        XCTAssert(m.numRows == 1, "Rows wrong")
+        XCTAssert(m.numColumns == 2, "Colmns wrong")
+    }
 }
