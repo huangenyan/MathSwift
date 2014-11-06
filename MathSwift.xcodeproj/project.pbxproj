@@ -7,17 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D35644011A0B6550009E9820 /* LinearAlgebra.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35644001A0B6550009E9820 /* LinearAlgebra.swift */; };
 		D3EC6B4319E7D3FB009E0C1B /* MathSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC6B4219E7D3FB009E0C1B /* MathSwiftTests.swift */; };
-		D3EC6B4D19E7D4FB009E0C1B /* MSMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC6B4C19E7D4FB009E0C1B /* MSMatrix.swift */; };
+		D3EC6B4D19E7D4FB009E0C1B /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC6B4C19E7D4FB009E0C1B /* Matrix.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D35644001A0B6550009E9820 /* LinearAlgebra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LinearAlgebra.swift; path = Operation/LinearAlgebra.swift; sourceTree = "<group>"; };
 		D3EC6B3319E7D3FB009E0C1B /* MathSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MathSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3EC6B3719E7D3FB009E0C1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3EC6B3E19E7D3FB009E0C1B /* MathSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MathSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3EC6B4119E7D3FB009E0C1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3EC6B4219E7D3FB009E0C1B /* MathSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathSwiftTests.swift; sourceTree = "<group>"; };
-		D3EC6B4C19E7D4FB009E0C1B /* MSMatrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MSMatrix.swift; path = DataType/MSMatrix.swift; sourceTree = "<group>"; };
+		D3EC6B4C19E7D4FB009E0C1B /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Matrix.swift; path = DataType/Matrix.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +40,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D35643FF1A0B64E3009E9820 /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				D35644001A0B6550009E9820 /* LinearAlgebra.swift */,
+			);
+			name = Operation;
+			sourceTree = "<group>";
+		};
 		D3EC6B2919E7D3FB009E0C1B = {
 			isa = PBXGroup;
 			children = (
@@ -59,6 +69,7 @@
 		D3EC6B3519E7D3FB009E0C1B /* MathSwift */ = {
 			isa = PBXGroup;
 			children = (
+				D35643FF1A0B64E3009E9820 /* Operation */,
 				D3EC6B3619E7D3FB009E0C1B /* Supporting Files */,
 				D3EC6B4E19E7D501009E0C1B /* DataType */,
 			);
@@ -93,7 +104,7 @@
 		D3EC6B4E19E7D501009E0C1B /* DataType */ = {
 			isa = PBXGroup;
 			children = (
-				D3EC6B4C19E7D4FB009E0C1B /* MSMatrix.swift */,
+				D3EC6B4C19E7D4FB009E0C1B /* Matrix.swift */,
 			);
 			name = DataType;
 			sourceTree = "<group>";
@@ -203,7 +214,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3EC6B4D19E7D4FB009E0C1B /* MSMatrix.swift in Sources */,
+				D3EC6B4D19E7D4FB009E0C1B /* Matrix.swift in Sources */,
+				D35644011A0B6550009E9820 /* LinearAlgebra.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
