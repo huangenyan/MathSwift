@@ -109,9 +109,9 @@ class MathSwiftTests: XCTestCase {
     }
     
     func testDotProduct() {
-        let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
-        let m2 = Matrix(elements: [[10,20,30],[40,50,60],[70,80,90]])
-        let result:Double = 2850
+        let m1 = Matrix(elements: [[1],[2],[3],[4],[5]])
+        let m2 = Matrix(elements: [[10],[20],[30],[40],[50]])
+        let result = 550.0
         XCTAssert(m1.dot(m2) == result, "Dot product wrong")
     }
     
@@ -157,11 +157,11 @@ class MathSwiftTests: XCTestCase {
     
     func testDeterminant() {
             let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
-            XCTAssert(m1.determinant == 0, "Determinant wrong for singular matrix")
+            XCTAssert(doublePrecisionEqual(m1.determinant, 0), "Determinant wrong for singular matrix")
             let m2 = Matrix(elements: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
             XCTAssert(m2.determinant == 1, "Determinant wrong for I(4x4)")
-            let m3 = Matrix.identityWithSize(10)
-            XCTAssert(m2.determinant == 1, "Determinant wrong for I(10x10)")
+            let m3 = Matrix.identityWithSize(5)
+            XCTAssert(m3.determinant == 1, "Determinant wrong for I(5x5)")
             let m4 = Matrix(elements: [[1,2,0],[-1,1,1],[1,2,3]])
             XCTAssert(m4.determinant == 9, "Determinant wrong for a 3x3 matrix")
     }
@@ -169,7 +169,10 @@ class MathSwiftTests: XCTestCase {
     func testInverse() {
         self.measureBlock() {
             let m1 = Matrix.identityWithSize(5)
-            XCTAssert(m1.inverse == m1, "Inverse wrong for I(4x4)")
+            XCTAssert(m1.inverse == m1, "Inverse wrong for I(5x5)")
+            let m2 = Matrix(elements: [[1,2,3],[3,2,1],[2,1,3]])
+            let m2Inv = Matrix(elements: [[-5,3,4],[7,3,-8],[1,-3,4]]) / 12
+            XCTAssert(m2.inverse == m2Inv, "Inverse wrong for a 3x3 matrix")
         }
     }
     
@@ -191,19 +194,6 @@ class MathSwiftTests: XCTestCase {
         XCTAssert(m1 +++ m2 --- m3 == result, "Concatenate wrong")
     }
     
-    func testQRDecmposition() {
-        let aConstant = sqrt(2.0)
-        var R2Result = Matrix(rows: 3, columns: 3)
-        R2Result[0,ALL] = Matrix(elements: [[2,5,4]])
-        R2Result[1,ALL] = Matrix(elements: [[0,3,0]])
-        R2Result[2,ALL] = Matrix(elements: [[0,0,2*aConstant]])
-        let m2 = Matrix(elements: [[1,1,4],[1,4,2],[1,4,2],[1,1,0]])
-        let (_,R2) = m2.QRDecomposition()
-        // Due to precision problem, the test may fail for whole matrix comparision
-        XCTAssert(R2[ALL,0..<2] == R2Result[ALL,0..<2], "QR Decomposition wrong")
-        
-    }
-    
     func testReduction() {
         let m1 = Matrix(elements: [[1,2,3],[4,5,6]])
         let m1Result1 = Matrix(elements: [[5,7,9]])
@@ -218,4 +208,19 @@ class MathSwiftTests: XCTestCase {
         println(m1)
     }
     
+    func testSVD() {
+        let m = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
+        let (U,S,VT) = m.singularValueDecomposition()
+        XCTAssert(U * U.transpose == Matrix.identityWithSize(m.rows), "U should be orthogonal")
+        XCTAssert(VT * VT.transpose == Matrix.identityWithSize(m.columns), "V should be orthogonal")
+        XCTAssert(m == U * S * VT, "M should be equal to U*S*VT")
+    }
+    
+    func testEigen() {
+        let m = Matrix(elements: [[1,2],[3,4]])
+        let (values, vectors) = m.eigen()
+        XCTAssert(m * vectors[0] == values[0] * vectors[0], "Eigen wrong")
+        XCTAssert(m * vectors[1] == values[1] * vectors[1], "Eigen wrong")
+    }
+
 }

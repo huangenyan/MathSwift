@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Accelerate
 
 public enum MatrixDimension {
     case Row, Column
@@ -46,11 +47,7 @@ public struct Matrix {
     /// Return the transpose matrix of `self`
     public var transpose: Matrix {
         var result = Matrix(rows: self.columns, columns: self.rows)
-        for i in 0..<self.rows {
-            for j in 0..<self.columns {
-                result[j,i] = self[i,j]
-            }
-        }
+        vDSP_mtransD(self.elements, 1, &result.elements, 1, vDSP_Length(self.rows), vDSP_Length(self.columns))
         return result
     }
     
@@ -73,43 +70,59 @@ public struct Matrix {
     
     /// Return the inverse matrix of `self`. If `self` is singular or not a square matrix, return nil.
     public var inverse: Matrix? {
-        if self.rows != self.columns || self.determinant == 0 {
+        
+        if self.rows != self.columns {
             return nil
         }
-        var cofactorMatrix = Matrix(rows: self.rows, columns: self.columns)
-        for i in 0..<self.rows {
-            for j in 0..<self.columns {
-                var rowsUsed = (0..<self.rows as Range<Int>).map({$0})
-                rowsUsed.removeAtIndex(i)
-                var columnsUsed = (0..<self.columns as Range<Int>).map({$0})
-                columnsUsed.removeAtIndex(j)
-                
-                let part = self[rowsUsed, columnsUsed]
-                let cofactor = part.determinant
-                
-                cofactorMatrix[i,j] = (-1 ^ Double(i+j) * cofactor).toMatrix()
-            }
+        var inMatrix = self.elements
+        var N = __CLPK_integer(sqrt(Double(self.elements.count)))
+        var pivots = [__CLPK_integer](count: Int(N), repeatedValue: 0)
+        var workspace = [Double](count: Int(N), repeatedValue: 0.0)
+        var error : __CLPK_integer = 0
+        dgetrf_(&N, &N, &inMatrix, &N, &pivots, &error)
+        
+        if error != 0 {
+            return nil
         }
         
-        let result = (1 / self.determinant) * cofactorMatrix.transpose
+        dgetri_(&N, &inMatrix, &N, &pivots, &workspace, &N, &error)
+        var result = Matrix(rows: self.rows, columns: self.columns)
+        result.elements = inMatrix
         return result
     }
     
     /// Return the determinant of `self`, where `self` must be a square matrix.
     public var determinant: Double {
         assert(self.rows == self.columns, "Determinant can only computed on square matrix")
-        var result = 0.0
-        if self.rows == 2 {
-            result = (self[0,0] * self[1,1] - self[0,1] * self[1,0]).toDouble()!
-            return result
+        
+        var m = __CLPK_integer(self.rows)
+        var n = __CLPK_integer(self.columns)
+        var a = self.transpose.elements
+        var lda = m
+        var ipiv = [__CLPK_integer](count: min(self.rows, self.columns), repeatedValue: 0)
+        var info: __CLPK_integer = 0
+        dgetrf_(&m, &n, &a, &lda, &ipiv, &info)
+        
+        let luMatrix = Matrix(rows: self.rows, columns: self.columns, elements: a)
+        var result = 1.0
+        for i in 0..<min(self.rows, self.columns) {
+            result *= luMatrix[i,i].toDouble()!
         }
-        for i in 0..<self.columns {
-            var columnsUsed = (0..<self.columns as Range<Int>).map({$0})
-            columnsUsed.removeAtIndex(i)
-            let tmp = self[0,i].toDouble()! * self[1..<self.rows,columnsUsed].determinant
-            result += -1 ^ Double(i) * tmp
+        
+        var noi = 0
+        for i in 0..<min(self.rows, self.columns) {
+            if i != Int(ipiv[i]) {
+                noi++
+            }
+        }
+        if noi % 2 == 1 {
+            result *= -1
+        }
+        if min(self.rows, self.columns) % 2 == 1 {
+            result *= -1
         }
         return result
+
     }
 
     /// Create a matrix using a tuple with (`rows`, `columns`), and `elements` are initialzed to 0.
@@ -123,7 +136,7 @@ public struct Matrix {
     public init(rows: Int, columns: Int) {
         self.rows = rows
         self.columns = columns
-        elements = Array(count: rows * columns, repeatedValue: 0.0)
+        self.elements = Array(count: rows * columns, repeatedValue: 0.0)
     }
     
     /// Create a matrix using a 2D-array with the form [[row1],[row2]...], the size of the matrix is inferred from the 2D-array.
@@ -135,6 +148,13 @@ public struct Matrix {
         }
         self.rows = elements.count
         self.columns = elements[0].count
+    }
+    
+    /// Create a matrix using the `rows`, `columns` and `elements`.
+    public init(rows: Int, columns: Int, elements: [Double]) {
+        self.rows = rows
+        self.columns = columns
+        self.elements = elements
     }
     
     /// Create a `rows` by `columns` matrix filling with 0s.
@@ -239,13 +259,12 @@ public struct Matrix {
     
     /// Return the dot product of `self` and `m`.
     public func dot(m: Matrix) -> Double {
-        assert(self.rows == m.rows && self.columns == m.columns, "Dimension of two matrices mismatch for dot product")
+        assert(self.columns == 1 && m.columns == 1, "Dot product can only be performed on vectors")
+        assert(self.rows == m.rows, "Length mismatch for two vectors")
+        var selfCopy = self
+        var mCopy = m
         var result = 0.0
-        for i in 0..<self.rows {
-            for j in 0..<self.columns {
-                result += self[i,j].toDouble()! * m[i,j].toDouble()!
-            }
-        }
+        vDSP_dotprD(&selfCopy.elements, 1, &mCopy.elements, 1, &result, vDSP_Length(self.rows))
         
         return result
     }
@@ -311,7 +330,7 @@ extension Matrix: FloatLiteralConvertible {
 public func == (lhs: Matrix, rhs: Matrix) -> Bool {
     if lhs.columns == rhs.columns && lhs.rows == rhs.rows {
         for i in 0..<lhs.elements.count {
-            if lhs.elements[i] != rhs.elements[i] {
+            if !doublePrecisionEqual(lhs.elements[i], rhs.elements[i]) {
                 break;
             } else if i == lhs.elements.count - 1 {
                 return true
@@ -319,6 +338,14 @@ public func == (lhs: Matrix, rhs: Matrix) -> Bool {
         }
     }
     
+    return false
+}
+
+public func doublePrecisionEqual(a: Double, b: Double) -> Bool {
+    let epsilon = 1e-14
+    if a >= b - epsilon && a <= b + epsilon {
+        return true
+    }
     return false
 }
 
@@ -341,100 +368,118 @@ public func ^ (lhs: Double, rhs: Double) -> Double {
 /// [1 2; 3 4] + [1 1; 1 1] = [2 3; 4 5]
 public func + (lhs: Matrix, rhs: Matrix) -> Matrix {
     assert(lhs.columns == rhs.columns && lhs.rows == rhs.rows, "Two matrices must have the same dimension")
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] + rhs.elements[i]
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    vDSP_vaddD(&lhsCopy.elements, 1, &rhsCopy.elements, 1, &result.elements, 1, vDSP_Length(lhs.elements.count))
     return result
 }
 
 /// [1 2; 3 4] - [1 1; 1 1] = [0 1; 2 3]
 public func - (lhs: Matrix, rhs: Matrix) -> Matrix {
     assert(lhs.columns == rhs.columns && lhs.rows == rhs.rows, "Two matrices must have the same dimension")
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] - rhs.elements[i]
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    vDSP_vsubD(&lhsCopy.elements, 1, &rhsCopy.elements, 1, &result.elements, 1, vDSP_Length(lhs.elements.count))
     return result
 }
 
 /// [1 2; 3 4] + 1 = [2 3; 4 5]
 public func + (lhs: Matrix, rhs: Double) -> Matrix {
-    var result = Matrix.onesWithRows(lhs.rows, columns: lhs.columns) * rhs
-    return lhs + result
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    vDSP_vsaddD(&lhsCopy.elements, 1, &rhsCopy, &result.elements, 1, vDSP_Length(lhs.elements.count))
+    return result
 }
 
 /// 1 + [1 2; 3 4] = [2 3; 4 5]
 public func + (lhs: Double, rhs: Matrix) -> Matrix {
-    var result = Matrix.onesWithRows(rhs.rows, columns: rhs.columns) * lhs
-    return result + rhs
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: rhs.size)
+    vDSP_vsaddD(&rhsCopy.elements, 1, &lhsCopy, &result.elements, 1, vDSP_Length(rhs.elements.count))
+    return result
 }
 
 /// [1 2; 3 4] - 1 = [0 1; 2 3]
 public func - (lhs: Matrix, rhs: Double) -> Matrix {
-    var result = Matrix.onesWithRows(lhs.rows, columns: lhs.columns) * rhs
-    return lhs - result
+    var lhsCopy = lhs
+    var result = Matrix(size: lhs.size)
+    var negRhs = -rhs
+    vDSP_vsaddD(&lhsCopy.elements, 1, &negRhs, &result.elements, 1, vDSP_Length(lhs.elements.count))
+    return result
+}
+
+/// -[1 2; 3 4] = [-1 -2; -3 -4]
+public prefix func - (matrix: Matrix) -> Matrix {
+    var matrixCopy = matrix
+    var result = Matrix(size: matrix.size)
+    vDSP_vnegD(&matrixCopy.elements, 1, &result.elements, 1, vDSP_Length(matrix.elements.count))
+    return result
 }
 
 /// 1 - [1 2; 3 4] = [0 -1; -2 -3]
 public func - (lhs: Double, rhs: Matrix) -> Matrix {
-    var result = Matrix.onesWithRows(rhs.rows, columns: rhs.columns) * lhs
-    return result - rhs
+    return lhs + (-rhs)
 }
 
 /// [1 2; 3 4] *~ [2 2; 2 2] = [2 4; 6 8]
 public func *~ (lhs: Matrix, rhs: Matrix) -> Matrix {
     assert(lhs.columns == rhs.columns && lhs.rows == rhs.rows, "Two matrices must have the same dimension")
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] * rhs.elements[i]
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    vDSP_vmulD(&lhsCopy.elements, 1, &rhsCopy.elements, 1, &result.elements, 1, vDSP_Length(lhs.elements.count))
     return result
 }
 
 /// [2 4; 6 8] /~ [2 2; 2 2] = [2 4; 6 8]
 public func /~ (lhs: Matrix, rhs: Matrix) -> Matrix {
     assert(lhs.columns == rhs.columns && lhs.rows == rhs.rows, "Two matrices must have the same dimension")
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] / rhs.elements[i]
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    vDSP_vdivD(&lhsCopy.elements, 1, &rhsCopy.elements, 1, &result.elements, 1, vDSP_Length(lhs.elements.count))
     return result
 }
 
 /// [1 2; 3 4] * 2 = [2 4; 6 8]
 public func * (lhs: Matrix, rhs: Double) -> Matrix {
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] * rhs
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    var zero = 0.0
+    vDSP_vsmsaD(&lhsCopy.elements, 1, &rhsCopy, &zero, &result.elements, 1, vDSP_Length(lhs.elements.count))
     return result
 }
 
 /// 2 * [1 2; 3 4] = [2 4; 6 8]
 public func * (lhs: Double, rhs: Matrix) -> Matrix {
-    var result = Matrix(rows: rhs.rows, columns: rhs.columns)
-    for i in 0..<rhs.elements.count {
-        result.elements[i] = lhs * rhs.elements[i]
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: rhs.size)
+    var zero = 0.0
+    vDSP_vsmsaD(&rhsCopy.elements, 1, &lhsCopy, &zero, &result.elements, 1, vDSP_Length(rhs.elements.count))
     return result
 }
 
 /// [2 4; 6 8] / 2 = [1 2; 3 4]
 public func / (lhs: Matrix, rhs: Double) -> Matrix {
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] / rhs
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: lhs.size)
+    vDSP_vsdivD(&lhsCopy.elements, 1, &rhsCopy, &result.elements, 1, vDSP_Length(lhs.elements.count))
     return result
 }
 
 /// 12 / [1 2; 3 4] = [12 6; 4 3]
 public func / (lhs: Double, rhs: Matrix) -> Matrix {
-    var result = Matrix(rows: rhs.rows, columns: rhs.columns)
-    for i in 0..<rhs.elements.count {
-        result.elements[i] = lhs / rhs.elements[i]
-    }
+    var lhsCopy = lhs
+    var rhsCopy = rhs
+    var result = Matrix(size: rhs.size)
+    vDSP_svdivD(&rhsCopy.elements, &lhsCopy, 1, &result.elements, 1, vDSP_Length(rhs.elements.count))
     return result
 }
 
@@ -443,15 +488,6 @@ public func ^~ (lhs: Matrix, rhs: Double) -> Matrix {
     var result = Matrix(rows: lhs.rows, columns: lhs.columns)
     for i in 0..<lhs.elements.count {
         result.elements[i] = lhs.elements[i] ^ rhs
-    }
-    return result
-}
-
-/// [2 2; 2 2] ^~ [1 2; 3 4] = [2 4; 8 16]
-public func ^~ (lhs: Matrix, rhs: Matrix) -> Matrix {
-    var result = Matrix(rows: lhs.rows, columns: lhs.columns)
-    for i in 0..<lhs.elements.count {
-        result.elements[i] = lhs.elements[i] ^ rhs.elements[i]
     }
     return result
 }
@@ -472,12 +508,10 @@ public func ^ (lhs: Matrix, rhs: Int) -> Matrix {
 /// Production of two matrices.
 public func * (lhs: Matrix, rhs: Matrix) -> Matrix {
     assert(lhs.columns == rhs.rows, "Dimension mismatch of multiplied matrices")
+    var lhsCopy = lhs
+    var rhsCopy = rhs
     var result = Matrix(rows: lhs.rows, columns: rhs.columns)
-    for i in 0..<result.rows {
-        for j in 0..<result.columns {
-            result[i,j] = lhs[i,ALL].dot(rhs[ALL,j].transpose).toMatrix()
-        }
-    }
+    vDSP_mmulD(&lhsCopy.elements, 1, &rhsCopy.elements, 1, &result.elements, 1, vDSP_Length(result.rows), vDSP_Length(result.columns), vDSP_Length(lhs.columns))
     return result
 }
 
