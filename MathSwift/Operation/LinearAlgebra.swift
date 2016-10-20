@@ -18,19 +18,19 @@ extension Matrix {
         var n = __CLPK_integer(self.rows)
         var a = self.transpose.elements
         var lda = n
-        var wr = [Double](count: self.rows, repeatedValue: 0.0)
-        var wi = [Double](count: self.rows, repeatedValue: 0.0)
-        var vl = [Double](count: self.rows * self.rows, repeatedValue: 0.0)
+        var wr = [Double](repeating: 0.0, count: self.rows)
+        var wi = [Double](repeating: 0.0, count: self.rows)
+        var vl = [Double](repeating: 0.0, count: self.rows * self.rows)
         var ldvl = n
-        var vr = [Double](count: self.rows * self.rows, repeatedValue: 0.0)
+        var vr = [Double](repeating: 0.0, count: self.rows * self.rows)
         var ldvr = n
         var lwork = n * 4
-        var work = [Double](count: Int(lwork), repeatedValue: 0.0)
+        var work = [Double](repeating: 0.0, count: Int(lwork))
         var info: __CLPK_integer = 0
         
         dgeev_(&jobvl, &jobvr, &n, &a, &lda, &wr, &wi, &vl, &ldvl, &vr, &ldvr, &work, &lwork, &info)
         
-        var eigenvectors = [Matrix](count: self.rows, repeatedValue: Matrix(rows: self.rows, columns: 1))
+        var eigenvectors = [Matrix](repeating: Matrix(rows: self.rows, columns: 1), count: self.rows)
         for i in 0..<self.rows {
             for j in 0..<self.rows {
                 eigenvectors[i].elements[j] = vr[i * self.rows + j]
@@ -47,17 +47,17 @@ extension Matrix {
         var jobvt: Int8 = 65
         var m = __CLPK_integer(self.rows)
         var n = __CLPK_integer(self.columns)
-        var minMN = min(m, n)
+        let minMN = m < n ? m : n
         var a = self.transpose.elements
         var lda = m
         var ldu = m
         var ldvt = n
         var lwork = __CLPK_integer(5 * self.rows * self.columns)
         var info: __CLPK_integer = 0
-        var work = [Double](count: Int(lwork), repeatedValue: 0.0)
-        var u = [Double](count: self.rows * self.rows, repeatedValue: 0.0)
-        var s = [Double](count: Int(minMN), repeatedValue: 0.0)
-        var vt = [Double](count: self.columns * self.columns, repeatedValue: 0.0)
+        var work = [Double](repeating: 0.0, count: Int(lwork))
+        var u = [Double](repeating: 0.0, count: self.rows * self.rows)
+        var s = [Double](repeating: 0.0, count: Int(minMN))
+        var vt = [Double](repeating: 0.0, count: self.columns * self.columns)
         
         dgesvd_(&jobu, &jobvt, &m, &n, &a, &lda, &s, &u, &ldu, &vt, &ldvt, &work, &lwork, &info)
         

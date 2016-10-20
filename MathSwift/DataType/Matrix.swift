@@ -10,20 +10,23 @@ import Foundation
 import Accelerate
 
 public enum MatrixDimension {
-    case Row, Column
+    case row, column
 }
 
 public protocol MatrixIndexType {}
 
 extension Array: MatrixIndexType {}
-extension Range: MatrixIndexType {}
+extension CountableRange: MatrixIndexType {}
+extension CountableClosedRange: MatrixIndexType {}
 extension Int: MatrixIndexType {}
 
 func toIntArray(index: MatrixIndexType) -> [Int] {
     
-    if let intArrayIndex = index as? [Int] {
-        return index as [Int]
-    } else if let rangeIndex = index as? Range<Int> {
+    if index is [Int] {
+        return index as! [Int]
+    } else if let rangeIndex = index as? CountableRange<Int> {
+        return rangeIndex.map({$0})
+    } else if let rangeIndex = index as? CountableClosedRange<Int> {
         return rangeIndex.map({$0})
     } else if let intIndex = index as? Int {
         return [intIndex]
@@ -76,8 +79,8 @@ public struct Matrix {
         }
         var inMatrix = self.elements
         var N = __CLPK_integer(sqrt(Double(self.elements.count)))
-        var pivots = [__CLPK_integer](count: Int(N), repeatedValue: 0)
-        var workspace = [Double](count: Int(N), repeatedValue: 0.0)
+        var pivots = [__CLPK_integer](repeating: 0, count: Int(N))
+        var workspace = [Double](repeating: 0.0, count: Int(N))
         var error : __CLPK_integer = 0
         dgetrf_(&N, &N, &inMatrix, &N, &pivots, &error)
         
@@ -99,26 +102,26 @@ public struct Matrix {
         var n = __CLPK_integer(self.columns)
         var a = self.transpose.elements
         var lda = m
-        var ipiv = [__CLPK_integer](count: min(self.rows, self.columns), repeatedValue: 0)
+        var ipiv = [__CLPK_integer](repeating: 0, count: self.rows)
         var info: __CLPK_integer = 0
         dgetrf_(&m, &n, &a, &lda, &ipiv, &info)
         
         let luMatrix = Matrix(rows: self.rows, columns: self.columns, elements: a)
         var result = 1.0
-        for i in 0..<min(self.rows, self.columns) {
+        for i in 0..<self.rows {
             result *= luMatrix[i,i].toDouble()!
         }
         
         var noi = 0
-        for i in 0..<min(self.rows, self.columns) {
+        for i in 0..<self.rows {
             if i != Int(ipiv[i]) {
-                noi++
+                noi += 1
             }
         }
         if noi % 2 == 1 {
             result *= -1
         }
-        if min(self.rows, self.columns) % 2 == 1 {
+        if self.rows % 2 == 1 {
             result *= -1
         }
         return result
@@ -129,14 +132,14 @@ public struct Matrix {
     public init(size: (rows: Int, columns: Int)) {
         self.rows = size.rows
         self.columns = size.columns
-        elements = Array(count: rows * columns, repeatedValue: 0.0)
+        elements = Array(repeating: 0.0, count: rows * columns)
     }
     
     /// Create a matrix using the `rows` and `columns`, and `elements` are initialzed to 0.
     public init(rows: Int, columns: Int) {
         self.rows = rows
         self.columns = columns
-        self.elements = Array(count: rows * columns, repeatedValue: 0.0)
+        self.elements = Array(repeating: 0.0, count: rows * columns)
     }
     
     /// Create a matrix using a 2D-array with the form [[row1],[row2]...], the size of the matrix is inferred from the 2D-array.
@@ -158,19 +161,19 @@ public struct Matrix {
     }
     
     /// Create a `rows` by `columns` matrix filling with 0s.
-    public static func zerosWithRows(rows: Int, columns: Int) -> Matrix {
+    public static func zerosWithRows(_ rows: Int, columns: Int) -> Matrix {
         return Matrix(rows: rows, columns: columns)
     }
     
     /// Create a `rows` by `columns` matrix filling with 1s.
-    public static func onesWithRows(rows: Int, columns: Int) -> Matrix {
+    public static func onesWithRows(_ rows: Int, columns: Int) -> Matrix {
         var result = Matrix(rows: rows, columns: columns)
-        result.elements = Array(count: rows * columns, repeatedValue: 1.0)
+        result.elements = Array(repeating: 1.0, count: rows * columns)
         return result
     }
     
     /// Create a `size` by `size` identity matrix.
-    public static func identityWithSize(size: Int) -> Matrix {
+    public static func identityWithSize(_ size: Int) -> Matrix {
         var result = Matrix(rows: size, columns: size)
         for i in 0..<size {
             result[i,i] = 1.0
@@ -181,8 +184,8 @@ public struct Matrix {
     /// M[[0,2],[0,1,2]] = [a00 a01 a02; a20 a21 a22]
     public subscript(rows: MatrixIndexType, columns: MatrixIndexType) -> Matrix {
         get {
-            let rowArray = toIntArray(rows)
-            let columnArray = toIntArray(columns)
+            let rowArray = toIntArray(index: rows)
+            let columnArray = toIntArray(index: columns)
             var realRows = rowArray, realColumns = columnArray
             if rowArray.isEmpty {
                 realRows = (0..<self.rows).map({$0})
@@ -201,8 +204,8 @@ public struct Matrix {
             return M
         }
         set {
-            let rowArray = toIntArray(rows)
-            let columnArray = toIntArray(columns)
+            let rowArray = toIntArray(index: rows)
+            let columnArray = toIntArray(index: columns)
             var realRows = rowArray, realColumns = columnArray
             if rowArray.isEmpty {
                 realRows = (0..<self.rows).map({$0})
@@ -228,17 +231,17 @@ public struct Matrix {
     }
 
     /// Reduce the matrix to a single row or a single column. E.g. "M.reduceAlongDimensiion(.row, initial: 0, combine: +)" will sum each row to produce a vector.
-    public func reduceAlongDimension(dimension: MatrixDimension, initial: Double, combine: (Double, Double) -> Double) -> Matrix {
+    public func reduceAlongDimension(_ dimension: MatrixDimension, initial: Double, combine: (Double, Double) -> Double) -> Matrix {
         var result: Matrix
         switch dimension {
-        case .Row:
+        case .row:
             result = Matrix.onesWithRows(self.rows, columns: 1) * initial
             for i in 0..<self.rows {
                 for j in 0..<self.columns {
                     result[i,0] = combine(result[i,0].toDouble()!, self[i,j].toDouble()!).toMatrix()
                 }
             }
-        case .Column:
+        case .column:
             result = Matrix.onesWithRows(1, columns: self.columns) * initial
             for i in 0..<self.columns {
                 for j in 0..<self.rows {
@@ -251,14 +254,14 @@ public struct Matrix {
     }
     
     /// Return the projection vector of `self` on `v`, where `self` and `v` must be both vectors.
-    public func projectionOnVector(v: Matrix) -> Matrix {
+    public func projectionOnVector(_ v: Matrix) -> Matrix {
         assert(self.columns == v.columns && self.columns == 1, "Only vectors can be projected")
         assert(self.rows == v.rows, "Two vectors should have the same length")
         return self.dot(v) / v.dot(v) * v
     }
     
     /// Return the dot product of `self` and `m`.
-    public func dot(m: Matrix) -> Double {
+    public func dot(_ m: Matrix) -> Double {
         assert(self.columns == 1 && m.columns == 1, "Dot product can only be performed on vectors")
         assert(self.rows == m.rows, "Length mismatch for two vectors")
         var selfCopy = self
@@ -270,7 +273,7 @@ public struct Matrix {
     }
     
     /// Reshape `self` to a `rows` by `columns` matrix.
-    public func reshapeToRows(rows: Int, columns: Int) -> Matrix {
+    public func reshapeToRows(_ rows: Int, columns: Int) -> Matrix {
         assert(self.rows * self.columns == rows * columns, "Reshaped matrix must contain the same number of elements")
         var result = Matrix(rows: rows, columns: columns)
         result.elements = self.elements
@@ -281,12 +284,12 @@ public struct Matrix {
 
 extension Matrix: Equatable {}
 
-extension Matrix: Printable {
+extension Matrix: CustomStringConvertible {
     public var description: String {
         var result = ""
         for i in 0..<self.rows {
             for j in 0..<self.columns {
-                result += NSString(format: "%.3f\t", self[i,j].toDouble()!)
+                result += NSString(format: "%.3f\t", self[i,j].toDouble()!) as String
             }
             result += "\n"
         }
@@ -294,20 +297,31 @@ extension Matrix: Printable {
     }
 }
 
-extension Matrix: SequenceType {
+public struct MatrixIterator: IteratorProtocol {
     
-    public func generate() -> GeneratorOf<Double> {
-        var nextIndex = 0
-        return GeneratorOf<Double> {
-            if nextIndex == self.elements.count {
-                return nil
-            }
-            return self.elements[nextIndex++]
+    let matrix: Matrix
+    var nextIndex: Int = 0
+    
+    init(_ matrix: Matrix) {
+        self.matrix = matrix
+    }
+    mutating public func next() -> Double? {
+        if nextIndex == self.matrix.elements.count {
+            return nil
         }
+        let next = self.matrix.elements[nextIndex]
+        nextIndex += 1
+        return next
     }
 }
 
-extension Matrix: IntegerLiteralConvertible {
+extension Matrix: Sequence {
+    public func makeIterator() -> MatrixIterator {
+        return MatrixIterator(self)
+    }
+}
+
+extension Matrix: ExpressibleByIntegerLiteral {
     
     /// Create a 1x1 matrix by literal.
     public init(integerLiteral value: IntegerLiteralType) {
@@ -317,7 +331,7 @@ extension Matrix: IntegerLiteralConvertible {
     }
 }
 
-extension Matrix: FloatLiteralConvertible {
+extension Matrix: ExpressibleByFloatLiteral {
     
     /// Create a 1x1 matrix by literal.
     public init(floatLiteral value: FloatLiteralType) {
@@ -341,7 +355,7 @@ public func == (lhs: Matrix, rhs: Matrix) -> Bool {
     return false
 }
 
-public func doublePrecisionEqual(a: Double, b: Double) -> Bool {
+public func doublePrecisionEqual(_ a: Double, _ b: Double) -> Bool {
     let epsilon = 1e-14
     if a >= b - epsilon && a <= b + epsilon {
         return true
@@ -353,12 +367,26 @@ public func != (lhs: Matrix, rhs: Matrix) -> Bool {
     return !(lhs == rhs)
 }
 
-infix operator *~ {associativity left precedence 150}
-infix operator /~ {associativity left precedence 150}
-infix operator ^~ {associativity right precedence 155}
-infix operator ^  {associativity right precedence 155}
-infix operator +++ {associativity left precedence 138}
-infix operator --- {associativity left precedence 138}
+precedencegroup ExponentiationPrecedence {
+    higherThan: MultiplicationPrecedence
+    lowerThan: BitwiseShiftPrecedence
+    associativity: right
+    assignment: false
+}
+
+precedencegroup MatrixConcatenationPrecedence {
+    higherThan: RangeFormationPrecedence
+    lowerThan: AdditionPrecedence
+    associativity: left
+    assignment: false
+}
+
+infix operator *~: MultiplicationPrecedence
+infix operator /~: MultiplicationPrecedence
+infix operator ^~: ExponentiationPrecedence
+infix operator ^: ExponentiationPrecedence
+infix operator +++: MatrixConcatenationPrecedence
+infix operator ---: MatrixConcatenationPrecedence
 
 /// 2 ^ 3 = 8
 public func ^ (lhs: Double, rhs: Double) -> Double {

@@ -167,7 +167,7 @@ class MathSwiftTests: XCTestCase {
     }
     
     func testInverse() {
-        self.measureBlock() {
+        self.measure() {
             let m1 = Matrix.identityWithSize(5)
             XCTAssert(m1.inverse == m1, "Inverse wrong for I(5x5)")
             let m2 = Matrix(elements: [[1,2,3],[3,2,1],[2,1,3]])
@@ -198,14 +198,14 @@ class MathSwiftTests: XCTestCase {
         let m1 = Matrix(elements: [[1,2,3],[4,5,6]])
         let m1Result1 = Matrix(elements: [[5,7,9]])
         let m1Result2 = Matrix(elements: [[6],[15]])
-        XCTAssert(m1.reduceAlongDimension(.Column, initial: 0, combine: +) == m1Result1, "Reduce along columns wrong")
-        XCTAssert(m1.reduceAlongDimension(.Row, initial: 0, combine: +) == m1Result2, "Reduce along rows wrong")
+        XCTAssert(m1.reduceAlongDimension(.column, initial: 0, combine: +) == m1Result1, "Reduce along columns wrong")
+        XCTAssert(m1.reduceAlongDimension(.row, initial: 0, combine: +) == m1Result2, "Reduce along rows wrong")
     }
     
     func testFormat() {
         let constant = sqrt(2.0)
         let m1 = Matrix(elements: [[constant,0,2.3],[1,constant/2,1.87432],[0,2.5,0]])
-        println(m1)
+        print(m1)
     }
     
     func testSVD() {
