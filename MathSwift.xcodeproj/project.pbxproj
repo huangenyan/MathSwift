@@ -8,12 +8,41 @@
 
 /* Begin PBXBuildFile section */
 		D35644011A0B6550009E9820 /* LinearAlgebra.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35644001A0B6550009E9820 /* LinearAlgebra.swift */; };
+		D3B3D7801DC09FBB00DA0D78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B3D77F1DC09FBB00DA0D78 /* AppDelegate.swift */; };
+		D3B3D7821DC09FBC00DA0D78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B3D7811DC09FBC00DA0D78 /* ViewController.swift */; };
+		D3B3D7851DC09FBC00DA0D78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3B3D7831DC09FBC00DA0D78 /* Main.storyboard */; };
+		D3B3D7871DC09FBC00DA0D78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3B3D7861DC09FBC00DA0D78 /* Assets.xcassets */; };
+		D3B3D78A1DC09FBC00DA0D78 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3B3D7881DC09FBC00DA0D78 /* LaunchScreen.storyboard */; };
 		D3EC6B4319E7D3FB009E0C1B /* MathSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC6B4219E7D3FB009E0C1B /* MathSwiftTests.swift */; };
 		D3EC6B4D19E7D4FB009E0C1B /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC6B4C19E7D4FB009E0C1B /* Matrix.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D3B3D7901DC0A0DC00DA0D78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3EC6B2A19E7D3FB009E0C1B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3EC6B3219E7D3FB009E0C1B;
+			remoteInfo = MathSwift;
+		};
+		D3B3D7921DC0A0E600DA0D78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3EC6B2A19E7D3FB009E0C1B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3EC6B3219E7D3FB009E0C1B;
+			remoteInfo = MathSwift;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		D35644001A0B6550009E9820 /* LinearAlgebra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LinearAlgebra.swift; path = Operation/LinearAlgebra.swift; sourceTree = "<group>"; };
+		D3B3D77D1DC09FBB00DA0D78 /* MathSwiftDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MathSwiftDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3B3D77F1DC09FBB00DA0D78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D3B3D7811DC09FBC00DA0D78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D3B3D7841DC09FBC00DA0D78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		D3B3D7861DC09FBC00DA0D78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D3B3D7891DC09FBC00DA0D78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D3B3D78B1DC09FBC00DA0D78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3EC6B3319E7D3FB009E0C1B /* MathSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MathSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3EC6B3719E7D3FB009E0C1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3EC6B3E19E7D3FB009E0C1B /* MathSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MathSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -23,6 +52,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D3B3D77A1DC09FBB00DA0D78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D3EC6B2F19E7D3FB009E0C1B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -48,11 +84,25 @@
 			name = Operation;
 			sourceTree = "<group>";
 		};
+		D3B3D77E1DC09FBB00DA0D78 /* MathSwiftDemo */ = {
+			isa = PBXGroup;
+			children = (
+				D3B3D77F1DC09FBB00DA0D78 /* AppDelegate.swift */,
+				D3B3D7811DC09FBC00DA0D78 /* ViewController.swift */,
+				D3B3D7831DC09FBC00DA0D78 /* Main.storyboard */,
+				D3B3D7861DC09FBC00DA0D78 /* Assets.xcassets */,
+				D3B3D7881DC09FBC00DA0D78 /* LaunchScreen.storyboard */,
+				D3B3D78B1DC09FBC00DA0D78 /* Info.plist */,
+			);
+			path = MathSwiftDemo;
+			sourceTree = "<group>";
+		};
 		D3EC6B2919E7D3FB009E0C1B = {
 			isa = PBXGroup;
 			children = (
 				D3EC6B3519E7D3FB009E0C1B /* MathSwift */,
 				D3EC6B3F19E7D3FB009E0C1B /* MathSwiftTests */,
+				D3B3D77E1DC09FBB00DA0D78 /* MathSwiftDemo */,
 				D3EC6B3419E7D3FB009E0C1B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,6 +112,7 @@
 			children = (
 				D3EC6B3319E7D3FB009E0C1B /* MathSwift.framework */,
 				D3EC6B3E19E7D3FB009E0C1B /* MathSwiftTests.xctest */,
+				D3B3D77D1DC09FBB00DA0D78 /* MathSwiftDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -122,6 +173,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		D3B3D77C1DC09FBB00DA0D78 /* MathSwiftDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D3B3D78E1DC09FBC00DA0D78 /* Build configuration list for PBXNativeTarget "MathSwiftDemo" */;
+			buildPhases = (
+				D3B3D7791DC09FBB00DA0D78 /* Sources */,
+				D3B3D77A1DC09FBB00DA0D78 /* Frameworks */,
+				D3B3D77B1DC09FBB00DA0D78 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D3B3D7931DC0A0E600DA0D78 /* PBXTargetDependency */,
+			);
+			name = MathSwiftDemo;
+			productName = MathSwiftDemo;
+			productReference = D3B3D77D1DC09FBB00DA0D78 /* MathSwiftDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
 		D3EC6B3219E7D3FB009E0C1B /* MathSwift */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D3EC6B4619E7D3FB009E0C1B /* Build configuration list for PBXNativeTarget "MathSwift" */;
@@ -151,6 +220,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D3B3D7911DC0A0DC00DA0D78 /* PBXTargetDependency */,
 			);
 			name = MathSwiftTests;
 			productName = MathSwiftTests;
@@ -163,9 +233,14 @@
 		D3EC6B2A19E7D3FB009E0C1B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0800;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
+					D3B3D77C1DC09FBB00DA0D78 = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
 					D3EC6B3219E7D3FB009E0C1B = {
 						CreatedOnToolsVersion = 6.0.1;
 						LastSwiftMigration = 0800;
@@ -184,6 +259,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = D3EC6B2919E7D3FB009E0C1B;
 			productRefGroup = D3EC6B3419E7D3FB009E0C1B /* Products */;
@@ -192,11 +268,22 @@
 			targets = (
 				D3EC6B3219E7D3FB009E0C1B /* MathSwift */,
 				D3EC6B3D19E7D3FB009E0C1B /* MathSwiftTests */,
+				D3B3D77C1DC09FBB00DA0D78 /* MathSwiftDemo */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D3B3D77B1DC09FBB00DA0D78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D3B3D78A1DC09FBC00DA0D78 /* LaunchScreen.storyboard in Resources */,
+				D3B3D7871DC09FBC00DA0D78 /* Assets.xcassets in Resources */,
+				D3B3D7851DC09FBC00DA0D78 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D3EC6B3119E7D3FB009E0C1B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -214,6 +301,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D3B3D7791DC09FBB00DA0D78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D3B3D7821DC09FBC00DA0D78 /* ViewController.swift in Sources */,
+				D3B3D7801DC09FBB00DA0D78 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D3EC6B2E19E7D3FB009E0C1B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -233,7 +329,75 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		D3B3D7911DC0A0DC00DA0D78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3EC6B3219E7D3FB009E0C1B /* MathSwift */;
+			targetProxy = D3B3D7901DC0A0DC00DA0D78 /* PBXContainerItemProxy */;
+		};
+		D3B3D7931DC0A0E600DA0D78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3EC6B3219E7D3FB009E0C1B /* MathSwift */;
+			targetProxy = D3B3D7921DC0A0E600DA0D78 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D3B3D7831DC09FBC00DA0D78 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D3B3D7841DC09FBC00DA0D78 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		D3B3D7881DC09FBC00DA0D78 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D3B3D7891DC09FBC00DA0D78 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		D3B3D78C1DC09FBC00DA0D78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				INFOPLIST_FILE = MathSwiftDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.huangenyan.MathSwiftDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		D3B3D78D1DC09FBC00DA0D78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				INFOPLIST_FILE = MathSwiftDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.huangenyan.MathSwiftDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		D3EC6B4419E7D3FB009E0C1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -401,6 +565,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D3B3D78E1DC09FBC00DA0D78 /* Build configuration list for PBXNativeTarget "MathSwiftDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3B3D78C1DC09FBC00DA0D78 /* Debug */,
+				D3B3D78D1DC09FBC00DA0D78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		D3EC6B2D19E7D3FB009E0C1B /* Build configuration list for PBXProject "MathSwift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
