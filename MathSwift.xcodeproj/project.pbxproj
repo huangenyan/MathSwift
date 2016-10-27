@@ -572,6 +572,7 @@
 				D3B3D78D1DC09FBC00DA0D78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D3EC6B2D19E7D3FB009E0C1B /* Build configuration list for PBXProject "MathSwift" */ = {
 			isa = XCConfigurationList;
