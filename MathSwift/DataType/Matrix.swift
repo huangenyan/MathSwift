@@ -50,7 +50,7 @@ public struct Matrix {
     /// Return the transpose matrix of `self`
     public var transpose: Matrix {
         var result = Matrix(rows: self.columns, columns: self.rows)
-        vDSP_mtransD(self.elements, 1, &result.elements, 1, vDSP_Length(self.rows), vDSP_Length(self.columns))
+        vDSP_mtransD(self.elements, 1, &result.elements, 1, vDSP_Length(self.columns), vDSP_Length(self.rows))
         return result
     }
     
