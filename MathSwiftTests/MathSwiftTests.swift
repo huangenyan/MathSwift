@@ -105,7 +105,10 @@ class MathSwiftTests: XCTestCase {
     func testTanspose() {
         let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
         let m2 = Matrix(elements: [[1,4,7],[2,5,8],[3,6,9]])
+        let m3 = Matrix(elements: [[1,2],[3,4],[5,6]])
+        let m4 = Matrix(elements: [[1,3,5],[2,4,6]])
         XCTAssert(m1.transpose == m2, "Transpose wrong")
+        XCTAssert(m3.transpose == m4, "Transpose wrong")
     }
     
     func testDotProduct() {
@@ -208,8 +211,16 @@ class MathSwiftTests: XCTestCase {
         print(m1)
     }
     
-    func testSVD() {
+    func testSVDSquareMatrix() {
         let m = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
+        let (U,S,VT) = m.singularValueDecomposition()
+        XCTAssert(U * U.transpose == Matrix.identityWithSize(m.rows), "U should be orthogonal")
+        XCTAssert(VT * VT.transpose == Matrix.identityWithSize(m.columns), "V should be orthogonal")
+        XCTAssert(m == U * S * VT, "M should be equal to U*S*VT")
+    }
+    
+    func testSVDGeneralMatrix() {
+        let m = Matrix(elements: [[1,2],[3,4],[5,6],[7,8]])
         let (U,S,VT) = m.singularValueDecomposition()
         XCTAssert(U * U.transpose == Matrix.identityWithSize(m.rows), "U should be orthogonal")
         XCTAssert(VT * VT.transpose == Matrix.identityWithSize(m.columns), "V should be orthogonal")
