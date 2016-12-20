@@ -1,0 +1,4 @@
+language: objective-c
+osx_image: xcode8.2
+xcode_project: MathSwift.xcodeproj
+xcode_scheme: MathSwift
