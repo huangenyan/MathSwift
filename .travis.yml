@@ -1,3 +1,4 @@
 language: objective-c
 xcode_project: MathSwift.xcodeproj
 xcode_scheme: MathSwift
+xcode_sdk: iphonesimulator
