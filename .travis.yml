@@ -4,4 +4,4 @@ xcode_project: MathSwift.xcodeproj
 xcode_scheme: MathSwift
 xcode_sdk: iphonesimulator
 
-script: xcodebuild test -project MathSwift.xcodeproj -scheme MathSwift -destination 'platform=iOS Simulator,name=iPhone 7' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+script: xcodebuild test -project MathSwift.xcodeproj -scheme MathSwift -destination 'platform=iOS Simulator,id=22FA2149-1241-469C-BF6D-462D3837DB72' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
