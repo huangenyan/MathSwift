@@ -1,4 +1,7 @@
 language: objective-c
+osx_image: xcode8.2
 xcode_project: MathSwift.xcodeproj
 xcode_scheme: MathSwift
 xcode_sdk: iphonesimulator
+
+script: xcodebuild test -project MathSwift.xcodeproj -scheme MathSwift -destination 'platform=iOS Simulator,name=iPhone 7' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
