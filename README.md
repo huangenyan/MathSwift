@@ -2,9 +2,14 @@ MathSwift
 =========
 MathSwift is an iOS Dynamic Framework written in Swift which supports complex mathmatical operations. Currently it mainly support matrix and some advanced linear  algrbra operations such as singular value decomposition. It may also serve as a demostration of good practice for developing iOS/OSX dynamic frameworks in pure Swift, including a complete set of unit tests.
 # Installation
-If you just want to use MathSwift in your own project, you only need to open MathSwift in Xcode, then press cmd+B to build the project. You will find a MathSwift.framework in the "Proucts" group. You can move it to your own project folder and add it into the project like adding other frameworks.
-
-Remember to add `import MathSwift` in the class where you use it. Please notice that MathSwift is written in pure Swift so it **DOESN'T** work with Objective-C code.
+MathSwift supports installation using [Carthage](https://github.com/Carthage/Carthage). You can integrate MathSwift with your project by adding the following line in your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
+```
+github "huangenyan/MathSwift"
+```
+To use MathSwift in your code, just remember to import it in your source code files:
+```Swift
+import MathSwift
+```
 # Usage
 The full documentation of MathSwift isn't available yet. However, each public method is well commented in the code so you may refer to it. Here I just show some examples.
 ## Create a matrix
