@@ -14,7 +14,7 @@ class MathSwiftTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        // Put setup code here. This method is called before the 6677invocation of each test method in the class.
     }
     
     override func tearDown() {
@@ -159,14 +159,14 @@ class MathSwiftTests: XCTestCase {
     }
     
     func testDeterminant() {
-            let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
-            XCTAssert(doublePrecisionEqual(m1.determinant, 0), "Determinant wrong for singular matrix")
-            let m2 = Matrix(elements: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
-            XCTAssert(m2.determinant == 1, "Determinant wrong for I(4x4)")
-            let m3 = Matrix.identityWithSize(5)
-            XCTAssert(m3.determinant == 1, "Determinant wrong for I(5x5)")
-            let m4 = Matrix(elements: [[1,2,0],[-1,1,1],[1,2,3]])
-            XCTAssert(m4.determinant == 9, "Determinant wrong for a 3x3 matrix")
+        let m1 = Matrix(elements: [[1,2,3],[4,5,6],[7,8,9]])
+        XCTAssert(doublePrecisionEqual(m1.determinant, 0), "Determinant wrong for singular matrix")
+        let m2 = Matrix(elements: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+        XCTAssert(m2.determinant == 1, "Determinant wrong for I(4x4)")
+        let m3 = Matrix.identityWithSize(5)
+        XCTAssert(m3.determinant == 1, "Determinant wrong for I(5x5)")
+        let m4 = Matrix(elements: [[1,2,0],[-1,1,1],[1,2,3]])
+        XCTAssert(m4.determinant == 9, "Determinant wrong for a 3x3 matrix")
     }
     
     func testInverse() {
@@ -233,5 +233,6 @@ class MathSwiftTests: XCTestCase {
         XCTAssert(m * vectors[0] == values[0] * vectors[0], "Eigen wrong")
         XCTAssert(m * vectors[1] == values[1] * vectors[1], "Eigen wrong")
     }
-
+    
 }
+

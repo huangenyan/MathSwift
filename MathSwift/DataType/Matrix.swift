@@ -78,17 +78,19 @@ public struct Matrix {
             return nil
         }
         var inMatrix = self.elements
-        var N = __CLPK_integer(sqrt(Double(self.elements.count)))
-        var pivots = [__CLPK_integer](repeating: 0, count: Int(N))
-        var workspace = [Double](repeating: 0.0, count: Int(N))
+        var N1 = __CLPK_integer(sqrt(Double(self.elements.count)))
+        var N2 = __CLPK_integer(sqrt(Double(self.elements.count)))
+        var N3 = __CLPK_integer(sqrt(Double(self.elements.count)))
+        var pivots = [__CLPK_integer](repeating: 0, count: Int(N1))
+        var workspace = [Double](repeating: 0.0, count: Int(N1))
         var error : __CLPK_integer = 0
-        dgetrf_(&N, &N, &inMatrix, &N, &pivots, &error)
+        dgetrf_(&N1, &N2, &inMatrix, &N3, &pivots, &error)
         
         if error != 0 {
             return nil
         }
         
-        dgetri_(&N, &inMatrix, &N, &pivots, &workspace, &N, &error)
+        dgetri_(&N1, &inMatrix, &N2, &pivots, &workspace, &N3, &error)
         var result = Matrix(rows: self.rows, columns: self.columns)
         result.elements = inMatrix
         return result
