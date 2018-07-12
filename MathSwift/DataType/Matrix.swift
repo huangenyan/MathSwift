@@ -573,8 +573,14 @@ public func --- (lhs: Matrix, rhs: Matrix) -> Matrix {
     return result
 }
 
+extension Int {
+    /// Convert a int to a 1x1 matrix
+    public func toMatrix() -> Matrix {
+        return Matrix(elements: [[Double(self)]])
+    }
+}
+
 extension Double {
-    
     /// Convert a double to a 1x1 matrix
     public func toMatrix() -> Matrix {
         return Matrix(elements: [[self]])
